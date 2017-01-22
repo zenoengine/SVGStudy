@@ -1,0 +1,149 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+</head>
+<body onload="main()">
+<svg id="canvas" style="width:500px; height:500px">
+</svg>
+</body>
+<script>
+    function main() {
+        var canvas = document.getElementById("canvas");
+        var min = 10;
+        var max = 100;
+        var count = Math.floor((Math.random() * 20) + 3);;
+        var radius = 100;
+        var data = GenerateRandomRangeData(min, max, count);
+        DrawPolyChart(canvas, data, radius);
+    }
+
+    function GenerateRandomRangeData(min, max, count) {
+        var data = [];
+        for (var idx = 0; idx < count; idx++) {
+            var value = Math.floor((Math.random() * max) + min);
+            //var value = 10;
+            data.push(value);
+        }
+        return data;
+    }
+    var svgNS = 'http://www.w3.org/2000/svg';
+    function CreateLine(x1, y1, x2, y2, strokeColor, strokeWidth) {
+
+        var line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', strokeColor);
+        line.setAttribute('stroke-width', strokeWidth);
+
+        return line;
+    }
+
+    function DrawPolyChart(parent, data, radius) {
+        var w = parent.getBoundingClientRect().width;
+        var h = parent.getBoundingClientRect().height;
+        var colorVariation = ["#de3131", "#31de87", "#31dede", "#3188de"];
+
+        for (var idx = 1; idx < 5; idx++) {
+            var outline = CreateOutline(radius, data);
+            outline.setAttribute('transform', 'translate(' + w / 2 + ',' + h / 2 + ') scale(' + 0.25 * idx + ') ');
+            parent.appendChild(outline);
+        }
+        
+        var polyGrpah = CreatePolyGraph(radius,data);
+        polyGrpah.setAttribute('transform', 'translate(' + w / 2 + ',' + h / 2 + ')');
+        parent.appendChild(polyGrpah);
+    }
+
+    function CreatePolyGraph(radius, data)
+    {
+        var polyGraph = document.createElementNS(svgNS, 'g');
+        var vertices = CreateVertices(data, radius);
+        var path = document.createElementNS(svgNS, "path");
+        path.setAttributeNS(null, "id", "pathIdD");
+        var d = 'M' + vertices[0].x + ',' + vertices[0].y + ' L';
+        for(var idx = 0 ; idx< vertices.length; idx++)
+        {
+            d += ' '
+            d += parseFloat(vertices[idx].x).toFixed(3);
+            d += ',';
+            d += parseFloat(vertices[idx].y).toFixed(3);
+
+            if(idx == vertices.length-1)
+            {
+                d += ' '
+            d += parseFloat(vertices[0].x).toFixed(3);
+            d += ',';
+            d += parseFloat(vertices[0].y).toFixed(3);
+            }
+        }
+        //newpath.setAttributeNS(null, "d", "M 0,0 C 19.285714,96.428571 24.016862,131.64801 90.714286,132.85714 140.78762,133.7649 202.79376,66.16041 202.79376,66.16041");
+        path.setAttributeNS(null, "d", d);
+        path.setAttributeNS(null, "stroke", "black");
+        path.setAttributeNS(null, "stroke-width", 1);
+        path.setAttributeNS(null, "opacity", 0.7);
+        path.setAttributeNS(null, "fill", "#31dede");
+
+        polyGraph.appendChild(path);
+
+        return polyGraph;
+    }
+
+    function CreateOutline(radius, data) {
+        var max = FindMax(data);
+        var outline = document.createElementNS(svgNS, 'g');
+
+        var outlineData = [];
+        for (var idx = 0; idx < data.length; idx++) {
+            outlineData[idx] = max;
+        }
+
+        var vertices = CreateVertices(outlineData, radius);
+        for (var idx = 0; idx < vertices.length; idx++) {
+            var begin = vertices[idx];
+            var end = vertices[0];
+            if (idx + 1 != vertices.length) {
+                end = vertices[idx + 1];
+            }
+            var line = CreateLine(begin.x, begin.y, end.x, end.y, 'black', 1);
+            outline.appendChild(line);
+        }
+
+        return outline;
+    }
+
+    function CreateVertices(data, radius) {
+        var vertices = [];
+        var count = data.length;
+        var maxValue = FindMax(data);
+
+        var degree = 360 / count;
+
+        for (var idx = 0; idx < data.length; idx++) {
+            var ratio = data[idx] / maxValue;
+            var angle = degree * (idx + 1) - 90;
+            var x = radius * ratio * Math.cos(angle * Math.PI / 180);
+            var y = radius * ratio * Math.sin(angle * Math.PI / 180);
+            vertices.push({ "x": x, "y": y });
+        }
+
+        return vertices;
+    }
+
+    function FindMax(data) {
+        var max = data[0];
+        for (var idx = 1; idx < data.length; idx++) {
+            if (max < data[idx]) {
+                max = data[idx];
+            }
+        }
+
+        return max;
+    }
+
+</script>
+
+</html>
