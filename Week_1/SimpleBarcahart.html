@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+</head>
+<body onload="main()">
+<svg id="canvas" style="width:500px; height:500px">
+</svg>
+</body>
+<script>
+    function main() {
+        var canvas = document.getElementById("canvas");
+
+        var min = 10;
+        var max = 100;
+        var count = 10;
+        var data = GenerateRandomRangeData(min, max, count);
+        DrawBarchart(canvas, data, max);
+    }
+
+    function GenerateRandomRangeData(min, max, count) {
+        var data = [];
+        for (var idx = 0; idx < count; idx++) {
+            var value = Math.floor((Math.random() * max) + min);
+            data.push(value);
+        }
+        return data;
+    }
+
+    function CreateRect(x, y, width, height, color) {
+        var svgNS = "http://www.w3.org/2000/svg";
+        var rect = document.createElementNS(svgNS, "rect");
+        rect.style.x = x;
+        rect.style.y = y;
+        rect.style.width = width;
+        rect.style.height = height;
+        rect.style.fill = color;
+
+        return rect;
+    }
+
+    function DrawBarchart(parent, data, max) {
+        var colorVariation = ["#de3131", "#31de87", "#31dede", "#3188de"];
+        var colorVariationLength = colorVariation.length;
+        for (var idx = 0; idx < data.length; idx++) {
+            var value = data[idx];
+            var rect = CreateRect(idx * 25, max - value, 20, value, colorVariation[idx % colorVariationLength]);
+            parent.appendChild(rect);
+        }
+    }
+</script>
+
+</html>
