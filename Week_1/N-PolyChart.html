@@ -9,13 +9,17 @@
 </svg>
 </body>
 <script>
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var colorVariation = ["#de3131", "#31de87", "#31dede", "#3188de"];
+
     function main() {
+        var dataCount = Math.floor((Math.random() * 10) + 3);
+
         var canvas = document.getElementById("canvas");
         var min = 10;
         var max = 100;
-        var count = Math.floor((Math.random() * 20) + 3);;
         var radius = 100;
-        var data = GenerateRandomRangeData(min, max, count);
+        var data = GenerateRandomRangeData(min, max, dataCount);
         DrawPolyChart(canvas, data, radius);
     }
 
@@ -28,7 +32,7 @@
         }
         return data;
     }
-    var svgNS = 'http://www.w3.org/2000/svg';
+
     function CreateLine(x1, y1, x2, y2, strokeColor, strokeWidth) {
 
         var line = document.createElementNS(svgNS, 'line');
@@ -45,50 +49,48 @@
     function DrawPolyChart(parent, data, radius) {
         var w = parent.getBoundingClientRect().width;
         var h = parent.getBoundingClientRect().height;
-        var colorVariation = ["#de3131", "#31de87", "#31dede", "#3188de"];
+
 
         for (var idx = 1; idx < 5; idx++) {
             var outline = CreateOutline(radius, data);
             outline.setAttribute('transform', 'translate(' + w / 2 + ',' + h / 2 + ') scale(' + 0.25 * idx + ') ');
             parent.appendChild(outline);
         }
-        
-        var polyGrpah = CreatePolyGraph(radius,data);
+
+        var polyGrpah = CreatePolyGraph(radius, data);
         polyGrpah.setAttribute('transform', 'translate(' + w / 2 + ',' + h / 2 + ')');
         parent.appendChild(polyGrpah);
     }
 
-    function CreatePolyGraph(radius, data)
-    {
+    function CreatePolyGraph(radius, data) {
         var polyGraph = document.createElementNS(svgNS, 'g');
         var vertices = CreateVertices(data, radius);
         var path = document.createElementNS(svgNS, "path");
         path.setAttributeNS(null, "id", "pathIdD");
         var d = 'M' + vertices[0].x + ',' + vertices[0].y + ' L';
-        for(var idx = 0 ; idx< vertices.length; idx++)
-        {
+        for (var idx = 0; idx < vertices.length; idx++) {
             d += ' '
             d += parseFloat(vertices[idx].x).toFixed(3);
             d += ',';
             d += parseFloat(vertices[idx].y).toFixed(3);
 
-            if(idx == vertices.length-1)
-            {
+            if (idx == vertices.length - 1) {
                 d += ' '
-            d += parseFloat(vertices[0].x).toFixed(3);
-            d += ',';
-            d += parseFloat(vertices[0].y).toFixed(3);
+                d += parseFloat(vertices[0].x).toFixed(3);
+                d += ',';
+                d += parseFloat(vertices[0].y).toFixed(3);
             }
         }
-        //newpath.setAttributeNS(null, "d", "M 0,0 C 19.285714,96.428571 24.016862,131.64801 90.714286,132.85714 140.78762,133.7649 202.79376,66.16041 202.79376,66.16041");
+
         path.setAttributeNS(null, "d", d);
         path.setAttributeNS(null, "stroke", "black");
         path.setAttributeNS(null, "stroke-width", 1);
         path.setAttributeNS(null, "opacity", 0.7);
-        path.setAttributeNS(null, "fill", "#31dede");
+
+        var colorIdx = Math.floor((Math.random() * (data.length - 1)));
+        path.setAttributeNS(null, "fill", colorVariation[colorIdx]);
 
         polyGraph.appendChild(path);
-
         return polyGraph;
     }
 
@@ -143,7 +145,6 @@
 
         return max;
     }
-
 </script>
 
 </html>
