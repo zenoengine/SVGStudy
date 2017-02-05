@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+</head>
+<body onload="main()">
+<svg id="canvas" style="width:300px; height:300px">
+</svg>
+<input type="button" onclick="main()" value="refresh" />
+</body>
+<script>
+    function main() {
+        var canvas = document.getElementById("canvas");
+
+        canvas.innerHTML = "";
+
+        var min = 10;
+        var max = 100;
+        var count = 10;
+        var data = [];
+
+        for (var idx = 0; idx < 5; idx++) {
+            data[idx] = GenerateRandomRangeData(min, max, count);
+        }
+
+        DrawStackedBarchart(canvas, data, max);
+    }
+
+    function GenerateRandomRangeData(min, max, count) {
+        var data = [];
+        for (var idx = 0; idx < count; idx++) {
+            var value = Math.floor((Math.random() * max) + min);
+            data.push(value);
+        }
+        return data;
+    }
+
+    function CreateRect(x, y, width, height, color) {
+        var svgNS = "http://www.w3.org/2000/svg";
+        var rect = document.createElementNS(svgNS, "rect");
+        rect.style.x = x;
+        rect.style.y = y;
+        rect.style.width = width;
+        rect.style.height = height;
+        rect.style.fill = color;
+
+        return rect;
+    }
+
+    function DrawStackedBarchart(parent, data, max) {
+        var colorVariation = ["#de3131", "#31de87", "#333", "#31dede", "#3B5998"];
+        var colorVariationLength = colorVariation.length;
+
+        var stackedValue = [];
+        for (var row = 0; row < data.length; row++) {
+            var value = data[row];
+            for (var col = 0; col < data[row].length; col++) {
+                var value = data[row][col] * 0.4;
+                if (stackedValue[col] == undefined) {
+                    stackedValue[col] = 0;
+                }
+                stackedValue[col] += value;
+                var rect = CreateRect(col * 25, 2 * max - stackedValue[col], 20, value, colorVariation[(row + 1) % data.length]);
+                parent.appendChild(rect);
+            }
+        }
+    }
+</script>
+
+</html>
