@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+</head>
+<body onload="main()">
+<svg id="canvas" style="width:500px; height:100px" viewBox="0 0 500 100">
+</svg>
+<input type="button" value="Refresh" onClick="window.location.reload();">
+</body>
+<script>
+    var svgNS = "http://www.w3.org/2000/svg";
+
+    function main() {
+        var canvas = document.getElementById("canvas");
+
+        var min = 10;
+        var max = 100;
+        var count = 10;
+        var data = GenerateRandomRangeData(min, max, count);
+        DrawBarchart(canvas, data, max);
+    }
+
+    function GenerateRandomRangeData(min, max, count) {
+        var data = [];
+        for (var idx = 0; idx < count; idx++) {
+            var value = Math.floor((Math.random() * max) + min);
+            data.push(value);
+        }
+        return data;
+    }
+
+    function CreateRect(x, y, width, height, color) {
+        var rect = document.createElementNS(svgNS, "rect");
+        rect.style.x = x;
+        rect.style.y = y;
+        rect.style.width = width;
+        rect.style.height = height;
+        rect.style.fill = color;
+        return rect;
+    }
+
+    function DrawBarchart(parent, data, max) {
+        var colorVariation = ["#de3131", "#31de87", "#31dede", "#3188de"];
+        var colorVariationLength = colorVariation.length;
+        for (var idx = 0; idx < data.length; idx++) {
+            var value = data[idx];
+            var x = idx * 25;
+            var y = max - value;
+            var rect = CreateRect(x, y, 20, value, colorVariation[idx % colorVariationLength]);
+            AnimateGrow(rect, '0 100', '0 0', x / 100 + 's');
+            parent.appendChild(rect);
+        }
+    }
+
+    function AnimateGrow(target, scaleFrom, scaleTo, duration) {
+        var animation = document.createElementNS(svgNS, 'animateTransform');
+        animation.setAttribute('attributeName', 'transform');
+        animation.setAttribute('attributeType', 'XML');
+        animation.setAttribute('type', 'translate');
+        animation.setAttribute('begin', '0s');
+        animation.setAttribute('from', scaleFrom);
+        animation.setAttribute('to', scaleTo);
+        animation.setAttribute('dur', duration);
+        animation.setAttribute('additive', 'sum');
+        animation.setAttribute('fill', 'freeze');
+        target.appendChild(animation);
+    }
+</script>
+
+</html>
